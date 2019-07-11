@@ -1,7 +1,7 @@
 <template>
   <div class="login-container">
     <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" auto-complete="on" label-position="left">
-      <h3 class="title">vue-element-admin</h3>
+      <h3 class="title">胡海</h3>
       <el-form-item prop="username">
         <span class="svg-container svg-container_login">
           <svg-icon icon-class="user" />
@@ -25,13 +25,9 @@
       </el-form-item>
       <el-form-item>
         <el-button :loading="loading" type="primary" style="width:100%;" @click.native.prevent="handleLogin">
-          Sign in
+          登 录
         </el-button>
       </el-form-item>
-      <div class="tips">
-        <span style="margin-right:20px;">username: admin</span>
-        <span> password: admin</span>
-      </div>
     </el-form>
   </div>
 </template>
@@ -40,13 +36,14 @@
 import { login, logout, getInfo } from '@/api/login'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import { isvalidUsername } from '@/utils/validate'
+import md5 from 'js-md5'
 
 export default {
   name: 'Login',
   data() {
     const validateUsername = (rule, value, callback) => {
       if (!isvalidUsername(value)) {
-        callback(new Error('请输入正确的用户名'))
+        callback(new Error('只能输入5-20个以字母开头、可带数字、“_”、“.”的字串'))
       } else {
         callback()
       }
@@ -60,7 +57,7 @@ export default {
     }
     return {
       loginForm: {
-        username: 'admin',
+        username: 'admin2',
         password: 'admin'
       },
       loginRules: {
@@ -72,29 +69,29 @@ export default {
     }
   },
   methods: {
-    showPwd() {
+    showPwd() {//密码的显示与否
       if (this.pwdType === 'password') {
         this.pwdType = ''
       } else {
         this.pwdType = 'password'
       }
     },
-    handleLogin() {
+    handleLogin() {// 登录
       const username = this.loginForm.username.trim()
+      const password = md5(this.loginForm.password)
       this.$refs.loginForm.validate(valid => {
         if (valid) {
           this.loading = true
-          login(username, this.loginForm.password).then((res) => {
-            const data = res.data
-            setToken(data.token)
-            this.$store.commit('SET_TOKEN', data.token)
+          login(username, password).then((res) => {
+            setToken(res.token)
+            this.$store.commit('SET_TOKEN', res.token)
             this.loading = false
             this.$router.push({ path: '/' })
           }).catch(() => {
             this.loading = false
           })
         } else {
-          console.log('error submit!!')
+          console.log('错误 登录正则验证不通过!!')
           return false
         }
       })

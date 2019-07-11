@@ -1,10 +1,11 @@
 /**
- * Created by jiachenpan on 16/11/18.
+ * 正则验证文件
  */
 
-export function isvalidUsername(str) {
-  const valid_map = ['admin', 'editor']
-  return valid_map.indexOf(str.trim()) >= 0
+export function isvalidUsername(str) { //验证用户名是否合法  只能输入5-20个以字母开头、可带数字、“_”、“.”的字串
+  const patrn = /^[a-zA-Z]{1}([a-zA-Z0-9]|[._]){4,19}$/;
+  if (!patrn.exec(str)) return false
+  return true
 }
 
 /* 合法uri*/
